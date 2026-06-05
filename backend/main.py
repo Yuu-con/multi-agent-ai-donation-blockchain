@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import sqlite3
+from contextlib import asynccontextmanager
 from contextlib import closing
 from pathlib import Path
 from typing import Optional
@@ -14,7 +14,18 @@ from .agents import assess_risk
 from .database import get_connection, init_db
 from .web3_integration import Web3DonationClient
 
-app = FastAPI(title="Multi-Agent Donation Blockchain API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(
+    title="Multi-Agent Donation Blockchain API",
+    version="0.1.0",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,11 +48,6 @@ class DonationIn(BaseModel):
     amount: float = Field(gt=0)
     submit_onchain: bool = False
     private_key: Optional[str] = None
-
-
-@app.on_event("startup")
-def on_startup() -> None:
-    init_db()
 
 
 @app.get("/health")

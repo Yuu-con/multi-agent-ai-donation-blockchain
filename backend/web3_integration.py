@@ -47,13 +47,23 @@ class Web3DonationClient:
 
         account = self.web3.eth.account.from_key(private_key)
         nonce = self.web3.eth.get_transaction_count(account.address)
-        tx = self.contract.functions.donate(campaign_id).build_transaction(
+        donation_call = self.contract.functions.donate(campaign_id)
+        gas_limit = int(
+            donation_call.estimate_gas(
+                {
+                    "from": account.address,
+                    "value": Web3.to_wei(amount_eth, "ether"),
+                }
+            )
+            * 1.2
+        )
+        tx = donation_call.build_transaction(
             {
                 "from": account.address,
                 "nonce": nonce,
                 "value": Web3.to_wei(amount_eth, "ether"),
-                "gas": 300000,
-                "gasPrice": self.web3.to_wei("2", "gwei"),
+                "gas": gas_limit,
+                "gasPrice": self.web3.eth.gas_price,
             }
         )
         signed = account.sign_transaction(tx)

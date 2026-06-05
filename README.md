@@ -5,7 +5,7 @@ Local prototype hệ thống quyên góp Blockchain sử dụng đa tác nhân A
 ## 1) Backend (FastAPI + SQLite + AI agents)
 
 ```bash
-cd /tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain
+cd <repo-root>
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
@@ -23,17 +23,17 @@ API chính:
 ## 2) Smart contract (Solidity + Ganache + Truffle)
 
 ```bash
-cd /tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain/contracts
+cd <repo-root>/contracts
 npm install
 # chạy Ganache local ở 127.0.0.1:8545 trước
 npm run compile
 npm run migrate
 ```
 
-Contract: `/tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain/contracts/DonationCampaign.sol`
+Contract: `<repo-root>/contracts/DonationCampaign.sol`
 
 Sau khi migrate, copy ABI JSON vào:
-`/tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain/contracts/DonationCampaign.abi.json`
+`<repo-root>/contracts/DonationCampaign.abi.json`
 và set env:
 - `WEB3_PROVIDER_URL`
 - `DONATION_CONTRACT_ADDRESS`
@@ -44,7 +44,7 @@ và set env:
 ## 3) Frontend dashboard (React)
 
 ```bash
-cd /tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain/frontend
+cd <repo-root>/frontend
 npm install
 npm run dev
 ```
@@ -62,6 +62,6 @@ Có thể đổi bằng biến `VITE_API_BASE_URL`.
 ## 4) Chạy test backend
 
 ```bash
-cd /tmp/workspace/Yuu-con/multi-agent-ai-donation-blockchain
+cd <repo-root>
 python3 -m unittest backend/tests/test_api.py -v
 ```
