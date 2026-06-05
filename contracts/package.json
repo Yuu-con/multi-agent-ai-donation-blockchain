@@ -1,0 +1,12 @@
+{
+  "name": "donation-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --network development"
+  },
+  "devDependencies": {
+    "truffle": "^5.11.5"
+  }
+}
