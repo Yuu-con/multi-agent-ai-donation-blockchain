@@ -47,6 +47,21 @@ class TransactionCreate(TransactionBase):
     pass
 
 
+class DemoTransactionCreate(BaseModel):
+    tx_hash: Optional[str] = None
+    campaign_id: Optional[int] = None
+    sender_wallet: Optional[str] = None
+    receiver_wallet: Optional[str] = None
+    amount: float = 0.2
+    timestamp: Optional[datetime] = None
+    wallet_age_days: int = 180
+    receiver_verified: bool = True
+    recent_tx_count: int = 1
+    avg_amount: float = 0.25
+    transfer_out_ratio: float = 0.05
+    transfer_out_time: float = 12.0
+
+
 class Transaction(TransactionBase):
     id: int
     timestamp: datetime

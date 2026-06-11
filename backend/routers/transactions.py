@@ -85,6 +85,27 @@ def create_demo_risky_transaction(db: Session = Depends(get_db)):
     return schemas.DemoTransactionResult(transaction=tx, agents=AGENT_NAMES, flags=tx.flags or [])
 
 
+@router.post("/demo-custom", response_model=schemas.DemoTransactionResult)
+def create_demo_custom_transaction(payload: schemas.DemoTransactionCreate, db: Session = Depends(get_db)):
+    campaign = _get_or_create_demo_campaign(db, payload.campaign_id)
+    transaction = schemas.TransactionCreate(
+        tx_hash=payload.tx_hash or f"0x{secrets.token_hex(32)}",
+        campaign_id=campaign.id,
+        sender_wallet=payload.sender_wallet or f"0x{secrets.token_hex(20)}",
+        receiver_wallet=payload.receiver_wallet or campaign.receiver_wallet,
+        amount=payload.amount,
+        timestamp=payload.timestamp or _utcnow(),
+        wallet_age_days=payload.wallet_age_days,
+        receiver_verified=payload.receiver_verified,
+        recent_tx_count=payload.recent_tx_count,
+        avg_amount=payload.avg_amount,
+        transfer_out_ratio=payload.transfer_out_ratio,
+        transfer_out_time=payload.transfer_out_time,
+    )
+    tx = _create_analyzed_transaction(transaction, db)
+    return schemas.DemoTransactionResult(transaction=tx, agents=AGENT_NAMES, flags=tx.flags or [])
+
+
 def _create_analyzed_transaction(transaction: schemas.TransactionCreate, db: Session):
     db_campaign = crud.get_campaign(db, transaction.campaign_id)
     if not db_campaign:
@@ -142,6 +163,15 @@ def _create_analyzed_transaction(transaction: schemas.TransactionCreate, db: Ses
         )
 
     return db_tx
+
+
+def _get_or_create_demo_campaign(db: Session, campaign_id: int | None):
+    if campaign_id:
+        campaign = crud.get_campaign(db, campaign_id)
+        if not campaign:
+            raise HTTPException(status_code=404, detail="Campaign không tồn tại")
+        return campaign
+    return _ensure_demo_campaign(db)
 
 
 def _ensure_demo_campaign(db: Session, receiver_verified: bool = True):

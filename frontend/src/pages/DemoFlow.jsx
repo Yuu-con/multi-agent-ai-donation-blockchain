@@ -1,4 +1,4 @@
-import { Bot, Database, Gauge, GitBranch, HandCoins, ShieldAlert } from "lucide-react";
+import { Bot, Database, Gauge, GitBranch, HandCoins, RefreshCw, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 
 import RiskBadge from "../components/RiskBadge.jsx";
@@ -14,17 +14,82 @@ const steps = [
   { label: "Dashboard cảnh báo", icon: ShieldAlert },
 ];
 
+const initialForm = {
+  campaign_id: "",
+  tx_hash: "",
+  sender_wallet: "",
+  receiver_wallet: "",
+  amount: "0.2",
+  wallet_age_days: "180",
+  receiver_verified: "true",
+  recent_tx_count: "1",
+  avg_amount: "0.25",
+  transfer_out_ratio: "0.05",
+  transfer_out_time: "12",
+};
+
+const presets = {
+  normal: {
+    amount: "0.2",
+    wallet_age_days: "180",
+    receiver_verified: "true",
+    recent_tx_count: "1",
+    avg_amount: "0.25",
+    transfer_out_ratio: "0.05",
+    transfer_out_time: "12",
+  },
+  risky: {
+    amount: "6",
+    wallet_age_days: "2",
+    receiver_verified: "false",
+    recent_tx_count: "9",
+    avg_amount: "0.4",
+    transfer_out_ratio: "0.95",
+    transfer_out_time: "0.2",
+  },
+};
+
 export default function DemoFlow() {
+  const [form, setForm] = useState(initialForm);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [running, setRunning] = useState(false);
 
-  const runDemo = async (type) => {
+  const updateField = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const applyPreset = (type) => {
+    setForm((current) => ({ ...current, ...presets[type] }));
+    setResult(null);
+    setError("");
+  };
+
+  const buildPayload = () => {
+    const optionalText = (value) => value.trim() || undefined;
+    const optionalNumber = (value) => (value === "" ? undefined : Number(value));
+    return {
+      campaign_id: optionalNumber(form.campaign_id),
+      tx_hash: optionalText(form.tx_hash),
+      sender_wallet: optionalText(form.sender_wallet),
+      receiver_wallet: optionalText(form.receiver_wallet),
+      amount: Number(form.amount),
+      wallet_age_days: Number(form.wallet_age_days),
+      receiver_verified: form.receiver_verified === "true",
+      recent_tx_count: Number(form.recent_tx_count),
+      avg_amount: Number(form.avg_amount),
+      transfer_out_ratio: Number(form.transfer_out_ratio),
+      transfer_out_time: Number(form.transfer_out_time),
+    };
+  };
+
+  const submitDemo = async (event) => {
+    event.preventDefault();
     setRunning(true);
     setError("");
+    setResult(null);
     try {
-      const endpoint = type === "normal" ? "/transactions/demo-normal" : "/transactions/demo-risky";
-      const res = await api.post(endpoint);
+      const res = await api.post("/transactions/demo-custom", buildPayload());
       setResult(res.data);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -37,7 +102,7 @@ export default function DemoFlow() {
     <div>
       <div className="page-heading">
         <h1>Demo Flow</h1>
-        <p>Minh họa luồng: quyên góp → blockchain → backend → AI agents → cảnh báo.</p>
+        <p>Nhập dữ liệu giao dịch demo rồi xem 5 AI agent phân tích và giải thích rủi ro.</p>
       </div>
 
       {error ? <ErrorBlock message={error} /> : null}
@@ -54,10 +119,161 @@ export default function DemoFlow() {
         })}
       </div>
 
-      <div className="toolbar">
-        <button className="btn btn-success" disabled={running} onClick={() => runDemo("normal")}>Chạy demo giao dịch bình thường</button>
-        <button className="btn btn-danger" disabled={running} onClick={() => runDemo("risky")}>Chạy demo giao dịch bất thường</button>
-      </div>
+      <section className="panel mb-3">
+        <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+          <h2 className="mb-0">Dữ liệu giao dịch demo</h2>
+          <div className="d-flex flex-wrap gap-2">
+            <button type="button" className="btn btn-outline-success icon-button" onClick={() => applyPreset("normal")}>
+              <RefreshCw size={18} /> Nạp mẫu bình thường
+            </button>
+            <button type="button" className="btn btn-outline-danger icon-button" onClick={() => applyPreset("risky")}>
+              <RefreshCw size={18} /> Nạp mẫu bất thường
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={submitDemo}>
+          <div className="form-grid">
+            <label className="form-span">
+              <span className="form-label">Campaign ID</span>
+              <input
+                className="form-control"
+                value={form.campaign_id}
+                onChange={(e) => updateField("campaign_id", e.target.value)}
+                placeholder="Để trống để dùng campaign demo đầu tiên"
+              />
+            </label>
+
+            <label className="form-span">
+              <span className="form-label">Transaction hash</span>
+              <input
+                className="form-control"
+                value={form.tx_hash}
+                onChange={(e) => updateField("tx_hash", e.target.value)}
+                placeholder="Để trống để hệ thống tự sinh"
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Ví gửi</span>
+              <input
+                className="form-control"
+                value={form.sender_wallet}
+                onChange={(e) => updateField("sender_wallet", e.target.value)}
+                placeholder="Để trống để tự sinh"
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Ví nhận</span>
+              <input
+                className="form-control"
+                value={form.receiver_wallet}
+                onChange={(e) => updateField("receiver_wallet", e.target.value)}
+                placeholder="Để trống để dùng ví campaign"
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Số tiền quyên góp ETH</span>
+              <input
+                type="number"
+                min="0.001"
+                step="0.001"
+                required
+                className="form-control"
+                value={form.amount}
+                onChange={(e) => updateField("amount", e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Số tiền trung bình ETH</span>
+              <input
+                type="number"
+                min="0.001"
+                step="0.001"
+                required
+                className="form-control"
+                value={form.avg_amount}
+                onChange={(e) => updateField("avg_amount", e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Tuổi ví gửi ngày</span>
+              <input
+                type="number"
+                min="0"
+                required
+                className="form-control"
+                value={form.wallet_age_days}
+                onChange={(e) => updateField("wallet_age_days", e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Ví nhận đã xác minh</span>
+              <select
+                className="form-select"
+                value={form.receiver_verified}
+                onChange={(e) => updateField("receiver_verified", e.target.value)}
+              >
+                <option value="true">Đã xác minh</option>
+                <option value="false">Chưa xác minh</option>
+              </select>
+            </label>
+
+            <label>
+              <span className="form-label">Số giao dịch gần đây</span>
+              <input
+                type="number"
+                min="0"
+                required
+                className="form-control"
+                value={form.recent_tx_count}
+                onChange={(e) => updateField("recent_tx_count", e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Tỉ lệ chuyển tiền đi</span>
+              <input
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                required
+                className="form-control"
+                value={form.transfer_out_ratio}
+                onChange={(e) => updateField("transfer_out_ratio", e.target.value)}
+              />
+            </label>
+
+            <label>
+              <span className="form-label">Thời gian chuyển tiền đi phút</span>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                required
+                className="form-control"
+                value={form.transfer_out_time}
+                onChange={(e) => updateField("transfer_out_time", e.target.value)}
+              />
+            </label>
+          </div>
+
+          <div className="d-flex flex-wrap gap-2 align-items-center mt-3">
+            <button className="btn btn-primary icon-button" disabled={running} type="submit">
+              <Bot size={18} /> {running ? "Đang phân tích..." : "Phân tích giao dịch demo"}
+            </button>
+            <span className="text-secondary">
+              Bỏ trống hash/ví nếu chỉ muốn demo logic chấm điểm rủi ro.
+            </span>
+          </div>
+        </form>
+      </section>
 
       {result ? (
         <section className="panel demo-result">
