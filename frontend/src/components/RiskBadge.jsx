@@ -1,3 +1,13 @@
+const normalizedLevel = {
+  "Thấp": "Thấp",
+  "Tháº¥p": "Thấp",
+  "Trung bình": "Trung bình",
+  "Trung bĂ¬nh": "Trung bình",
+  "Cao": "Cao",
+  "Rất cao": "Rất cao",
+  "Ráº¥t cao": "Rất cao",
+};
+
 const classByLevel = {
   "Thấp": "text-bg-success",
   "Trung bình": "text-bg-warning",
@@ -6,5 +16,6 @@ const classByLevel = {
 };
 
 export default function RiskBadge({ level }) {
-  return <span className={`badge ${classByLevel[level] || "text-bg-secondary"}`}>{level || "N/A"}</span>;
+  const label = normalizedLevel[level] || level || "N/A";
+  return <span className={`badge risk-badge ${classByLevel[label] || "text-bg-secondary"}`}>{label}</span>;
 }

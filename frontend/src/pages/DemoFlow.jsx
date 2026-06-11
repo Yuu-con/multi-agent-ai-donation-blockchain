@@ -6,7 +6,7 @@ import { ErrorBlock } from "../components/StateBlock.jsx";
 import api, { getErrorMessage } from "../services/api.js";
 
 const steps = [
-  { label: "Người dùng quyên góp", icon: HandCoins },
+  { label: "Customer quyên góp", icon: HandCoins },
   { label: "Blockchain ghi nhận", icon: GitBranch },
   { label: "Backend lưu giao dịch", icon: Database },
   { label: "AI agents phân tích", icon: Bot },
@@ -55,9 +55,7 @@ export default function DemoFlow() {
   const [error, setError] = useState("");
   const [running, setRunning] = useState(false);
 
-  const updateField = (field, value) => {
-    setForm((current) => ({ ...current, [field]: value }));
-  };
+  const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
 
   const applyPreset = (type) => {
     setForm((current) => ({ ...current, ...presets[type] }));
@@ -100,10 +98,16 @@ export default function DemoFlow() {
 
   return (
     <div>
-      <div className="page-heading">
-        <h1>Demo Flow</h1>
-        <p>Nhập dữ liệu giao dịch demo rồi xem 5 AI agent phân tích và giải thích rủi ro.</p>
-      </div>
+      <section className="demo-hero">
+        <div>
+          <span className="eyebrow">Presentation mode</span>
+          <h1>Demo luồng xử lý từ quyên góp đến cảnh báo AI.</h1>
+          <p>
+            Nhập dữ liệu giao dịch thủ công hoặc nạp mẫu nhanh để giảng viên thấy từng tiêu chí ảnh hưởng đến risk score.
+          </p>
+        </div>
+        <Bot size={42} />
+      </section>
 
       {error ? <ErrorBlock message={error} /> : null}
 
@@ -120,14 +124,17 @@ export default function DemoFlow() {
       </div>
 
       <section className="panel mb-3">
-        <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-          <h2 className="mb-0">Dữ liệu giao dịch demo</h2>
+        <div className="section-heading-row">
+          <div>
+            <h2>Dữ liệu giao dịch demo</h2>
+            <p>Thay đổi các trường để xem AI agents tính lại điểm rủi ro.</p>
+          </div>
           <div className="d-flex flex-wrap gap-2">
             <button type="button" className="btn btn-outline-success icon-button" onClick={() => applyPreset("normal")}>
-              <RefreshCw size={18} /> Nạp mẫu bình thường
+              <RefreshCw size={18} /> Mẫu bình thường
             </button>
             <button type="button" className="btn btn-outline-danger icon-button" onClick={() => applyPreset("risky")}>
-              <RefreshCw size={18} /> Nạp mẫu bất thường
+              <RefreshCw size={18} /> Mẫu bất thường
             </button>
           </div>
         </div>
@@ -136,142 +143,32 @@ export default function DemoFlow() {
           <div className="form-grid">
             <label className="form-span">
               <span className="form-label">Campaign ID</span>
-              <input
-                className="form-control"
-                value={form.campaign_id}
-                onChange={(e) => updateField("campaign_id", e.target.value)}
-                placeholder="Để trống để dùng campaign demo đầu tiên"
-              />
+              <input className="form-control" value={form.campaign_id} onChange={(e) => updateField("campaign_id", e.target.value)} placeholder="Để trống để dùng campaign demo đầu tiên" />
             </label>
-
             <label className="form-span">
               <span className="form-label">Transaction hash</span>
-              <input
-                className="form-control"
-                value={form.tx_hash}
-                onChange={(e) => updateField("tx_hash", e.target.value)}
-                placeholder="Để trống để hệ thống tự sinh"
-              />
+              <input className="form-control" value={form.tx_hash} onChange={(e) => updateField("tx_hash", e.target.value)} placeholder="Để trống để hệ thống tự sinh" />
             </label>
-
-            <label>
-              <span className="form-label">Ví gửi</span>
-              <input
-                className="form-control"
-                value={form.sender_wallet}
-                onChange={(e) => updateField("sender_wallet", e.target.value)}
-                placeholder="Để trống để tự sinh"
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Ví nhận</span>
-              <input
-                className="form-control"
-                value={form.receiver_wallet}
-                onChange={(e) => updateField("receiver_wallet", e.target.value)}
-                placeholder="Để trống để dùng ví campaign"
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Số tiền quyên góp ETH</span>
-              <input
-                type="number"
-                min="0.001"
-                step="0.001"
-                required
-                className="form-control"
-                value={form.amount}
-                onChange={(e) => updateField("amount", e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Số tiền trung bình ETH</span>
-              <input
-                type="number"
-                min="0.001"
-                step="0.001"
-                required
-                className="form-control"
-                value={form.avg_amount}
-                onChange={(e) => updateField("avg_amount", e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Tuổi ví gửi ngày</span>
-              <input
-                type="number"
-                min="0"
-                required
-                className="form-control"
-                value={form.wallet_age_days}
-                onChange={(e) => updateField("wallet_age_days", e.target.value)}
-              />
-            </label>
-
+            <label><span className="form-label">Ví gửi</span><input className="form-control" value={form.sender_wallet} onChange={(e) => updateField("sender_wallet", e.target.value)} placeholder="Để trống để tự sinh" /></label>
+            <label><span className="form-label">Ví nhận</span><input className="form-control" value={form.receiver_wallet} onChange={(e) => updateField("receiver_wallet", e.target.value)} placeholder="Để trống để dùng ví campaign" /></label>
+            <label><span className="form-label">Số tiền ETH</span><input type="number" min="0.001" step="0.001" required className="form-control" value={form.amount} onChange={(e) => updateField("amount", e.target.value)} /></label>
+            <label><span className="form-label">Số tiền trung bình ETH</span><input type="number" min="0.001" step="0.001" required className="form-control" value={form.avg_amount} onChange={(e) => updateField("avg_amount", e.target.value)} /></label>
+            <label><span className="form-label">Tuổi ví gửi ngày</span><input type="number" min="0" required className="form-control" value={form.wallet_age_days} onChange={(e) => updateField("wallet_age_days", e.target.value)} /></label>
             <label>
               <span className="form-label">Ví nhận đã xác minh</span>
-              <select
-                className="form-select"
-                value={form.receiver_verified}
-                onChange={(e) => updateField("receiver_verified", e.target.value)}
-              >
+              <select className="form-select" value={form.receiver_verified} onChange={(e) => updateField("receiver_verified", e.target.value)}>
                 <option value="true">Đã xác minh</option>
                 <option value="false">Chưa xác minh</option>
               </select>
             </label>
-
-            <label>
-              <span className="form-label">Số giao dịch gần đây</span>
-              <input
-                type="number"
-                min="0"
-                required
-                className="form-control"
-                value={form.recent_tx_count}
-                onChange={(e) => updateField("recent_tx_count", e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Tỉ lệ chuyển tiền đi</span>
-              <input
-                type="number"
-                min="0"
-                max="1"
-                step="0.01"
-                required
-                className="form-control"
-                value={form.transfer_out_ratio}
-                onChange={(e) => updateField("transfer_out_ratio", e.target.value)}
-              />
-            </label>
-
-            <label>
-              <span className="form-label">Thời gian chuyển tiền đi phút</span>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                required
-                className="form-control"
-                value={form.transfer_out_time}
-                onChange={(e) => updateField("transfer_out_time", e.target.value)}
-              />
-            </label>
+            <label><span className="form-label">Số giao dịch gần đây</span><input type="number" min="0" required className="form-control" value={form.recent_tx_count} onChange={(e) => updateField("recent_tx_count", e.target.value)} /></label>
+            <label><span className="form-label">Tỉ lệ chuyển tiền đi</span><input type="number" min="0" max="1" step="0.01" required className="form-control" value={form.transfer_out_ratio} onChange={(e) => updateField("transfer_out_ratio", e.target.value)} /></label>
+            <label><span className="form-label">Thời gian chuyển tiền đi phút</span><input type="number" min="0" step="0.1" required className="form-control" value={form.transfer_out_time} onChange={(e) => updateField("transfer_out_time", e.target.value)} /></label>
           </div>
 
-          <div className="d-flex flex-wrap gap-2 align-items-center mt-3">
-            <button className="btn btn-primary icon-button" disabled={running} type="submit">
-              <Bot size={18} /> {running ? "Đang phân tích..." : "Phân tích giao dịch demo"}
-            </button>
-            <span className="text-secondary">
-              Bỏ trống hash/ví nếu chỉ muốn demo logic chấm điểm rủi ro.
-            </span>
-          </div>
+          <button className="btn btn-primary icon-button mt-3" disabled={running} type="submit">
+            <Bot size={18} /> {running ? "Đang phân tích..." : "Phân tích giao dịch demo"}
+          </button>
         </form>
       </section>
 

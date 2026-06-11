@@ -1,3 +1,4 @@
+import { ArrowLeft, Bot, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -26,7 +27,9 @@ export default function TransactionDetail() {
   return (
     <div>
       <div className="page-heading">
-        <Link to="/transactions" className="small-link">← Quay lại transactions</Link>
+        <Link to="/admin/transactions" className="small-link icon-button">
+          <ArrowLeft size={16} /> Quay lại giao dịch
+        </Link>
         <h1>Chi tiết giao dịch</h1>
         <p>{transaction.tx_hash}</p>
       </div>
@@ -43,12 +46,18 @@ export default function TransactionDetail() {
           </dl>
         </div>
 
-        <div className="panel">
-          <h2>Kết quả phân tích</h2>
+        <div className="panel risk-explanation-panel">
+          <div className="section-heading-row">
+            <div>
+              <h2>Kết quả phân tích AI</h2>
+              <p>Không kết luận chắc chắn gian lận, chỉ cảnh báo dấu hiệu bất thường.</p>
+            </div>
+            <ShieldAlert size={24} />
+          </div>
           <div className="risk-score">{transaction.risk_score.toFixed(0)}<span>/100</span></div>
           <RiskBadge level={transaction.risk_level} />
           <p className="explanation">{transaction.explanation}</p>
-          <h3>Flags</h3>
+          <h3><Bot size={17} /> Flags từ agent</h3>
           {transaction.flags?.length ? (
             <ul className="flag-list">
               {transaction.flags.map((flag) => <li key={flag}>{flag}</li>)}
