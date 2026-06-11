@@ -1,0 +1,19 @@
+{
+  "name": "donation-blockchain",
+  "version": "1.0.0",
+  "description": "Smart contracts for multi-agent donation system",
+  "main": "index.js",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy:ganache": "npx hardhat run scripts/deploy.js --network ganache",
+    "test": "npx hardhat test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.5"
+  }
+}
