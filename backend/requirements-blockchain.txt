@@ -1,0 +1,3 @@
+# Install this only when testing Ganache/Hardhat Web3 integration.
+# Use standard CPython on Windows because MSYS Python may not provide pywin32 wheels.
+web3==6.19.0

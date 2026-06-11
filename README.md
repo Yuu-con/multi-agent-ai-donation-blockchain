@@ -70,6 +70,14 @@ python seed.py
 uvicorn main:app --reload
 ```
 
+Nếu cần test phần Web3.py với Ganache/Hardhat:
+
+```bash
+pip install -r requirements-blockchain.txt
+```
+
+Nên dùng Python chính thức từ python.org hoặc Anaconda trên Windows. Một số môi trường MSYS Python có thể thiếu wheel `pywin32` cho Web3.py.
+
 Swagger UI: http://127.0.0.1:8000/docs
 
 Test nhanh:
