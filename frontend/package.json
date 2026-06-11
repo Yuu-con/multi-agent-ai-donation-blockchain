@@ -1,0 +1,23 @@
+{
+  "name": "donation-risk-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "axios": "^1.7.2",
+    "bootstrap": "^5.3.3",
+    "lucide-react": "^0.395.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.24.0",
+    "recharts": "^2.12.7",
+    "vite": "^5.3.1"
+  },
+  "devDependencies": {}
+}
